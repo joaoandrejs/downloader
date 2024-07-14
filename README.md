@@ -2,7 +2,7 @@
 
 # Python Vídeos Downloader
 
-Baixe vídeos de vários sites de internet, como Youtube, Instagram, Twitter/X e áudios do SowndCloud.
+Baixe vídeos de vários sites de internet, como YouTube, Instagram, Twitter/X e áudios do SoundCloud.
 
 </div>
 
@@ -13,8 +13,14 @@ Baixe vídeos de vários sites de internet, como Youtube, Instagram, Twitter/X e
 
 ### Clone o repositório
 ```
-git clone https://github.com/vortexzjs/downloader
+git clone https://github.com/joaoandrejs/downloader
 ```
+
+### Entre na pasta
+```
+cd downloader
+```
+
 ### Instalar dependências
 ```
 pip install -r requirements.txt

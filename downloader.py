@@ -13,7 +13,31 @@ script_dir = path.dirname(path.abspath(__file__))
 download_dir = path.join(script_dir, nome_pasta)
 makedirs(download_dir, exist_ok=True)
 
-def download_youtube_video(url, file_format='mp4'):
+def convert_to_mp3(file_path):
+    try:
+        mp3 = input('Deseja converter para áudio? (S/N): ') 
+
+        if mp3.lower() == 's':
+            video_clip = VideoFileClip(file_path)
+            audio_path = path.splitext(file_path)[0] + '.mp3'
+            video_clip.audio.write_audiofile(audio_path)
+            video_clip.close()
+            erase = input('Deseja remover o arquivo original? (S/N): ') 
+
+            if erase.lower() == 's':
+                remove(file_path)
+                print(f"Deletado e convertido para áudio.")
+            else:
+                print(f"Convertido para áudio.")
+                return;
+        else:
+            return;
+        
+    except Exception as e:
+        print(f"Ocorreu um erro ao converter o arquivo para áudio:\n\n{e}")
+        return False
+    
+def download_youtube_video(url, file_format):
     try:
         yt = YouTube(url)
         
@@ -49,7 +73,7 @@ def download_youtube_video(url, file_format='mp4'):
         print(f"Ocorreu um erro ao baixar o vídeo:\n\n{e}")
         return False
 
-def soundcloud_download(url, file_format='mp3'):
+def soundcloud_download(url, file_format):
     try:
         # Inicializar a barra de progresso fora das funções de callback
         progress_bar = tqdm(unit='B', unit_scale=True, desc='Baixando')
@@ -90,7 +114,7 @@ def downloader(url, file_name) -> None:
     
     return download_path
 
-def download_twitter_video(url, file_format="mp3"):
+def download_twitter_video(url, file_format):
     api_url = f"https://twitsave.com/info?url={url}"
 
     response = get(api_url)
@@ -103,35 +127,11 @@ def download_twitter_video(url, file_format="mp3"):
     file_name = sub(r"[^a-zA-Z0-9]+", ' ', file_name).strip()  # Remove caracteres especiais do nome do arquivo
     file_name_with_ext = file_name + f".{file_format}"  # Nome do arquivo com a extensão apropriada
 
-    return downloader(highest_quality_url, file_name)
-
-def convert_to_mp3(file_path):
-    try:
-        mp3 = input('Deseja converter para áudio? (S/N): ') 
-
-        if mp3.lower() == 's':
-            video_clip = VideoFileClip(file_path)
-            audio_path = path.splitext(file_path)[0] + '.mp3'
-            video_clip.audio.write_audiofile(audio_path)
-            video_clip.close()
-            erase = input('Deseja remover o arquivo original? (S/N): ') 
-
-            if erase.lower() == 's':
-                remove(file_path)
-                print(f"Deletado e convertido para áudio.")
-            else:
-                print(f"Convertido para áudio.")
-                return;
-        else:
-            return;
-        
-    except Exception as e:
-        print(f"Ocorreu um erro ao converter o arquivo para áudio:\n\n{e}")
-        return False
+    return downloader(highest_quality_url, file_name_with_ext)
 
 username = None
 password = None
-def download_instagram_video(url, file_format='mp4', username=username, password=password):
+def download_instagram_video(url, file_format, username=username, password=password):
     try:
         loader = Instaloader(download_videos=True)
         shortcode = search(r"/(?:p|reel)/([^/]+)/", url)
@@ -156,31 +156,34 @@ def download_instagram_video(url, file_format='mp4', username=username, password
         return False
 
 def main():
-    url = input("URL do vídeo: ")
+    url = input("\n\033[1mURL do vídeo:\n> \033[0m")
+    
+    if 'soundcloud.com' not in url:
+        format = str(input("Formato do arquivo (mp3/mp4): ")).lower();
+        if format not in ['mp3', 'mp4']:
+            return print("Formato inválido. Use mp3 ou mp4.")
     
     if 'youtube.com' in url or 'youtu.be' in url:
-        file_path = download_youtube_video(url)
+        file_path = download_youtube_video(url, format)
     elif 'soundcloud.com' in url:
         file_path = soundcloud_download(url)
     elif 'instagram.com' in url:
-        file_path = download_instagram_video(url)
+        file_path = download_instagram_video(url, format)
     elif 'x.com' in url or 'twitter.com' in url:
-        file_path = download_twitter_video(url)
+        file_path = download_twitter_video(url, format)
     else:
-        print("Site não suportado. Atualmente só os seguintes sites: YouTube, Instagram, Twitter, e SoundCloud.")
+        return print("Site não suportado. Atualmente só os seguintes sites: YouTube, Instagram, Twitter, e SoundCloud.")
     return file_path
 
 if __name__ == '__main__':
-
-    print('______                    _                 _           ') 
-    print('|  _  \                  | |               | |          ')
-    print('| | | |_____      ___ __ | | ___   __ _  __| | ___ _ __ ')
-    print('| | | / _ \ \ /\ / / \'_ \| |/ _ \ / _` |/ _` |/ _ \ \'__|')
-    print('| |/ / (_) \ V  V /| | | | | (_) | (_| | (_| |  __/ |   ')
-    print('|___/ \___/ \_/\_/ |_| |_|_|\___/ \__,_|\__,_|\___|_|   ')
-    print('Sites: YouTube, SoundCloud, Instagram, Twitter/X')
-    print('')
-
-    file_path = main()
-    convert_to_mp3(file_path)
-    
+        print('\033[0;35m______                    _                 _           ') 
+        print('|  _  \                  | |               | |          ')
+        print('| | | |_____      ___ __ | | ___   __ _  __| | ___ _ __ ')
+        print('| | | / _ \ \ /\ / / \'_ \| |/ _ \ / _` |/ _` |/ _ \ \'__|')
+        print('| |/ / (_) \ V  V /| | | | | (_) | (_| | (_| |  __/ |   ')
+        print('|___/ \___/ \_/\_/ |_| |_|_|\___/ \__,_|\__,_|\___|_|   ')
+        print('\033[0;32mSites disponíveis:\033[m\n- YouTube\n- SoundCloud\n- Instagram\n- Twitter/X')
+        
+        while True:
+            print('')
+            main()

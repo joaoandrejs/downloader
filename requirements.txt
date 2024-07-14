@@ -1,9 +1,7 @@
-os
-re
-pytube
-instaloader
-moviepy
-youtube_dl
-requests
-tqdm
-bs4
+bs4==0.0.2
+instaloader==4.12
+moviepy==1.0.3
+pytube==15.0.0
+requests==2.32.3
+tqdm==4.66.4
+youtube-dl==2021.12.17
